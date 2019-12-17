@@ -2,6 +2,8 @@ const versions = require('../tools/versions');
 const bumpDev = require('../tools/bumpDev');
 const bumpPrerelease = require('../tools/bumpPrerelease');
 const publishDev = require('../tools/publishDev');
+const commit = require('../tools/commit');
+const ask = require('../tools/ask');
 
 module.exports = async (args) => {
     const {type, tag} = args;
@@ -14,9 +16,14 @@ module.exports = async (args) => {
         await bumpDev(type, tag);
     }
     // Publish dev packages
-    publishDev();
+    if (await ask('Publish dev packages?')) {
+        await publishDev();
+    }
 
     //Retrieve branch task and commit with a default (potentially overridable) message
+    if (await ask('Commit dev packages?')) {
+        await commit();
+    }
 
     //Push branch
 
