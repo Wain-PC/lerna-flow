@@ -5,8 +5,8 @@ const parseList = require('./parseList');
 module.exports = async () => {
     const {stdout} = await exec('lerna changed --json');
     const versions = parseList(stdout);
-
-    const preIds = unique(versions.map(({preid}) => preid));
+    console.log(versions.map(({version: {preid}}) => preid));
+    const preIds = unique(versions.map(({version: {preid}}) => preid));
     const hasPrereleaseVersions = preIds.length > 0;
 
     return {

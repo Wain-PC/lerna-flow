@@ -1,32 +1,38 @@
-const versions = require('../tools/versions');
+const getCurrentVersions = require('../tools/versions');
 const bumpDev = require('../tools/bumpDev');
 const bumpPrerelease = require('../tools/bumpPrerelease');
 const publishDev = require('../tools/publishDev');
 const commit = require('../tools/commit');
 const ask = require('../tools/ask');
+const changed = require('../tools/changed');
 
 module.exports = async (args) => {
     const {type, tag} = args;
-    const {versions, preIds, hasPrereleaseVersions} = await versions();
+
+    const {versions, preIds, hasPrereleaseVersions} = await getCurrentVersions();
+
+    const changedPackages = await changed();
 
     // If we have stable versions now, we should bump them to dev first
-    const question = hasPrereleaseVersions ? 'Bump prerelease versions' : 'Bump dev versions';
-    if(!await ask(question)) {
-        return;
-    }
-    if(hasPrereleaseVersions) {
-        await bumpPrerelease(tag);
+    if (hasPrereleaseVersions) {
+        // TODO: ask for tag if ambigous
+        if (await ask('Bump prerelease versions?')) {
+            await bumpPrerelease();
+        }
     } else {
-        await bumpDev(type, tag);
-    }
-    // Publish dev packages
-    if (await ask('Publish dev packages?')) {
-        await publishDev();
+        if (await ask('Bump dev versions?')) {
+            await bumpDev(type, tag);
+        }
     }
 
     //Retrieve branch task and commit with a default (potentially overridable) message
     if (await ask('Commit dev packages?')) {
         await commit();
+    }
+
+    // Publish dev packages
+    if (await ask('Publish dev packages?')) {
+        await publishDev();
     }
 
     //Push branch
