@@ -10,6 +10,10 @@ module.exports = async (args) => {
     const {versions, preIds, hasPrereleaseVersions} = await versions();
 
     // If we have stable versions now, we should bump them to dev first
+    const question = hasPrereleaseVersions ? 'Bump prerelease versions' : 'Bump dev versions';
+    if(!await ask(question)) {
+        return;
+    }
     if(hasPrereleaseVersions) {
         await bumpPrerelease(tag);
     } else {
