@@ -2,7 +2,7 @@ const getCurrentVersions = require('../tools/versions');
 const bumpDev = require('../tools/bumpDev');
 const bumpPrerelease = require('../tools/bumpPrerelease');
 const publishDev = require('../tools/publishDev');
-const commit = require('../tools/commit');
+const push = require('../tools/push');
 const ask = require('../tools/ask');
 const changed = require('../tools/changed');
 
@@ -25,17 +25,15 @@ module.exports = async (args) => {
         }
     }
 
-    //Retrieve branch task and commit with a default (potentially overridable) message
-    if (await ask('Commit dev packages?')) {
-        await commit();
-    }
-
     // Publish dev packages
     if (await ask('Publish dev packages?')) {
         await publishDev();
     }
 
     //Push branch
+    if (await ask('Push branch?')) {
+        await push();
+    }
 
     // Level up till we find sibling projects, look at their dependencies.
 
