@@ -21,32 +21,37 @@ module.exports = async () => {
             return;
         }
 
-        // Ask for CHANGELOG for each package.
-        for (const {name, version, path, containsChanges, deps} of list) {
-            const text = [];
-            const depsList = changedDependencies(list, deps, name);
-            if (containsChanges) {
-                let string = '';
-                let index = 0;
-                do {
-                    index++;
-                    string = await askString(`Changelog for package ${name} (line ${index}):`);
-                    if (string) {
-                        text.push(string);
-                    }
-                } while (string);
+        if (await ask('Update changelogs?')) {
+            // Ask for CHANGELOG for each package.
+            for (const {name, version, path, containsChanges, deps} of list) {
+                const text = [];
+                const depsList = changedDependencies(list, deps, name);
+                if (containsChanges) {
+                    let string = '';
+                    let index = 0;
+                    do {
+                        index++;
+                        string = await askString(`Changelog for package ${name} (line ${index}):`);
+                        if (string) {
+                            text.push(string);
+                        }
+                    } while (string);
+                }
+                // Update changelogs
+                await changelog({path, text, version, deps: depsList});
             }
-            // Update changelogs
-            await changelog({path, text, version, deps: depsList});
-        }
 
-        // Commit changelogs
-        await commit('Updated CHANGELOGs');
+            // Commit changelogs
+            if (await ask('Commit changelogs?')) {
+                await commit('Updated CHANGELOGs');
+            }
+
+        }
     }
 
     // Bump packages to stable
     const push = await ask('Push to git after versions update?');
-    await bump({push});
+    await bump({push, type: 'patch'});
 
     // Publish stable packages
     if (await ask(hasChangedPackages ? 'Publish STABLE packages to NPM?' : 'No changed packages found. You may try to publish already pushed packages to NPM.')) {
