@@ -19,6 +19,8 @@ module.exports = async ({version, text = [], path = '', deps}) => {
         }
     }
 
+    markdown += '\n';
+
     await prependFile(`${path}/CHANGELOG.md`, markdown);
     return markdown;
 };

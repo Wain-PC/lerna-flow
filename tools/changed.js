@@ -4,7 +4,7 @@ const parseList = require('./parseList');
 
 module.exports = async () => {
     try {
-        const {stdout} = await exec('lerna changed --json');
+        const {stdout} = await exec('lerna changed --json --include-merged-tags');
         const versions = parseList(stdout);
         const preIds = unique(versions.reduce((acc, {version: {preid}}) => {
             if(preid) {
