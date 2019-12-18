@@ -20,8 +20,8 @@ module.exports = async (args) => {
             if (await ask('Create new tag and push it?')) {
                 await gitTag();
                 console.log('New tag pushed, now make your changes and try running this tool again.');
-                return;
             }
+            return;
         }
 
         // If we have stable versions now, we should bump them to dev first
