@@ -5,8 +5,7 @@ const askChoice = require('./tools/askChoice');
 
 const run = async () => {
     // TODO: Use something smaller to parse args
-    const args = yargs.argv;
-    let [command] = args._;
+    let [command] = yargs.argv._;
 
     if(!command || !['dev', 'prod'].includes(command)) {
         command = await askChoice('Select command', ['dev', 'prod'], 'dev');
