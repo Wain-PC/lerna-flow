@@ -1,6 +1,4 @@
-const getCurrentVersions = require('../tools/versions');
-const bumpDev = require('../tools/bumpDev');
-const bumpPrerelease = require('../tools/bumpPrerelease');
+const bump = require('../tools/bump');
 const publishDev = require('../tools/publishDev');
 const push = require('../tools/push');
 const ask = require('../tools/ask');
@@ -9,30 +7,24 @@ const changed = require('../tools/changed');
 module.exports = async (args) => {
     const {type, tag} = args;
 
-    const {versions, preIds, hasPrereleaseVersions} = await getCurrentVersions();
+    const {versions, preIds, hasPrereleaseVersions} = await changed();
 
-    const changedPackages = await changed();
-
+    const push = await ask('Push changes?');
     // If we have stable versions now, we should bump them to dev first
     if (hasPrereleaseVersions) {
         // TODO: ask for tag if ambigous
-        if (await ask('Bump prerelease versions?')) {
-            await bumpPrerelease();
+        if (await ask('Prerelease versions found, bump them?')) {
+            await bump({type: 'prerelease', push});
         }
     } else {
         if (await ask('Bump dev versions?')) {
-            await bumpDev(type, tag);
+            await bump({type: 'pre' + type, tag, push});
         }
     }
 
     // Publish dev packages
-    if (await ask('Publish dev packages?')) {
+    if (await ask('Publish packages?')) {
         await publishDev();
-    }
-
-    //Push branch
-    if (await ask('Push branch?')) {
-        await push();
     }
 
     // Level up till we find sibling projects, look at their dependencies.

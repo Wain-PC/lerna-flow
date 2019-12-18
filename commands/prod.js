@@ -1,3 +1,7 @@
+const changed = require('../tools/changed');
+const ask = require('../tools/ask');
+
+
 module.exports = () => {
     // Find packages with prerelease tag
 
