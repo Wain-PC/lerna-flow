@@ -13,10 +13,12 @@ module.exports = async () => {
             return acc;
         }, []));
         const hasPrereleaseVersions = preIds.length > 0;
+        const hasChangedPackages = versions.length > 0;
 
         return {
             versions,
             hasPrereleaseVersions,
+            hasChangedPackages,
             preIds
         }
     } catch (err) {
@@ -24,6 +26,7 @@ module.exports = async () => {
             return {
                 versions: [],
                 hasPrereleaseVersions: false,
+                hasChangedPackages: false,
                 preIds: []
             };
         }

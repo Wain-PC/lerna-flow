@@ -9,8 +9,9 @@ module.exports = async ({type, tag, push}) => {
     const pushStr = push ? '' : '--no-push';
     const commitMessageStr = commitMessage ? `-m "${commitMessage}"` : '';
     const tagStr = tag ? `--preid "${tag}"` : '';
+    const exactStr = `--exact`;
 
-    const command = ['lerna version', typeStr, pushStr, commitMessageStr, tagStr].filter(v=>v).join(' ');
+    const command = ['lerna version', typeStr, pushStr, commitMessageStr, tagStr, exactStr].filter(v=>v).join(' ');
     // Run in the shell to allow interactive behavior
     return spawn(command, {shell: true});
 

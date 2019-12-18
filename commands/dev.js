@@ -8,9 +8,7 @@ const changed = require('../tools/changed');
 const gitTag = require('../tools/tag');
 
 module.exports = async (args) => {
-    const list = await changed();
-    const {versions, hasPrereleaseVersions, preIds} = list;
-    const hasChangedPackages = versions.length;
+    const {versions, hasPrereleaseVersions, hasChangedPackages, preIds} = await changed();
 
     let tag = preIds[0] || '';
 
@@ -32,9 +30,9 @@ module.exports = async (args) => {
             await bump({type: 'prerelease', push, tag});
         } else {
             tag = await askString('Enter dev tag:', 'dev');
-            const type = await askChoice('Bump type?', ['premajor', 'preminor', 'prepatch', 'custom'], 'preminor');
+            const type = await askChoice('Bump type?', ['premajor', 'preminor', 'prepatch'], 'preminor');
             const push = await ask('Push updated packages to git?');
-            await bump({type: type === 'custom' ? undefined : type, tag, push});
+            await bump({type, tag, push});
         }
     }
     // Publish dev packages
