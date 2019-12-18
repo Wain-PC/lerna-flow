@@ -12,7 +12,7 @@ const run = async () => {
     }
 
     const runner = require('./commands/' + command + '.js');
-    await runner(args, yargs);
+    await runner();
 
     console.log('Thanks, bye!');
 };
