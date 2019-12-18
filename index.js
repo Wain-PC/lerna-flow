@@ -14,18 +14,9 @@ const run = async () => {
         .help()
         .argv;
 
-    console.log(args);
-
     const [command] = args._;
-
-    try {
-        const runner = require('./commands/' + command + '.js');
-        await runner(args, yargs);
-    } catch (err) {
-        console.error(err);
-        console.log('Unknown command! Please take a look:\n');
-        yargs.showHelp();
-    }
+    const runner = require('./commands/' + command + '.js');
+    await runner(args, yargs);
 };
 
 run();

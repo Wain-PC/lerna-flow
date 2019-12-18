@@ -1,30 +1,45 @@
 const bump = require('../tools/bump');
-const publishDev = require('../tools/publishDev');
+const publish = require('../tools/publish');
 const push = require('../tools/push');
 const ask = require('../tools/ask');
+const askString = require('../tools/askString');
+const askChoice = require('../tools/askChoice');
 const changed = require('../tools/changed');
+const gitTag = require('../tools/tag');
 
 module.exports = async (args) => {
-    const {type, tag} = args;
+    const list = await changed();
+    const {versions, hasPrereleaseVersions, preIds} = list;
+    const hasChangedPackages = versions.length;
 
-    const {versions, preIds, hasPrereleaseVersions} = await changed();
+    let tag = preIds[0] || '';
 
-    const push = await ask('Push changes?');
-    // If we have stable versions now, we should bump them to dev first
-    if (hasPrereleaseVersions) {
-        // TODO: ask for tag if ambigous
-        if (await ask('Prerelease versions found, bump them?')) {
-            await bump({type: 'prerelease', push});
+    if (hasChangedPackages) {
+        console.log(versions.map(({name}) => name).join('\n'));
+        const changedPackagesFine = await ask(`${versions.length} changed packages, is that OK?\n`);
+
+        if (!changedPackagesFine) {
+            if (await ask('Create new tag and push it?')) {
+                await gitTag();
+                console.log('New tag pushed, now make your changes and try running this tool again.');
+                return;
+            }
         }
-    } else {
-        if (await ask('Bump dev versions?')) {
-            await bump({type: 'pre' + type, tag, push});
+
+        // If we have stable versions now, we should bump them to dev first
+        if (hasPrereleaseVersions) {
+            const push = await ask('Push to git after versions update?');
+            await bump({type: 'prerelease', push, tag});
+        } else {
+            tag = await askString('Enter dev tag:', 'dev');
+            const type = await askChoice('Bump type?', ['premajor', 'preminor', 'prepatch', 'custom'], 'preminor');
+            const push = await ask('Push updated packages to git?');
+            await bump({type: type === 'custom' ? undefined : type, tag, push});
         }
     }
-
     // Publish dev packages
-    if (await ask('Publish packages?')) {
-        await publishDev();
+    if (await ask(hasChangedPackages ? 'Publish packages to NPM?' : 'No changed packages found. You may try to publish already pushed packages to NPM.')) {
+        await publish(tag);
     }
 
     // Level up till we find sibling projects, look at their dependencies.
