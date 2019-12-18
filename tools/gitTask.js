@@ -1,4 +1,4 @@
-const gitBranch = require('./gitBranch.js');
+const gitBranch = require('./gitBranch');
 
 module.exports = async () => {
     const branch = await gitBranch();

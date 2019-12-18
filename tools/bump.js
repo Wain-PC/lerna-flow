@@ -4,7 +4,7 @@ const gitTask = require('./gitTask');
 
 module.exports = async ({type, tag, push}) => {
     const taskId = await gitTask();
-    const commitMessage = await askString('Commit message', `${taskId} Bump dev package versions`);
+    const commitMessage = await askString('Commit message', `${taskId} Bump package versions`);
     const typeStr = type || '';
     const pushStr = push ? '' : '--no-push';
     const commitMessageStr = commitMessage ? `-m "${commitMessage}"` : '';

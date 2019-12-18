@@ -3,6 +3,9 @@ const ask = require('../tools/ask');
 const askString = require('../tools/askString');
 const changelog = require('../tools/changelog');
 const changedDependencies = require('../tools/changedDependencies');
+const commit = require('../tools/commit');
+const bump = require('../tools/bump');
+const publish = require('../tools/publish');
 
 
 module.exports = async () => {
@@ -12,28 +15,41 @@ module.exports = async () => {
 
     if(hasChangedPackages) {
         console.log(list.map(({name}) => name).join('\n'));
+
         const changedPackagesFine = await ask(`Going to publish ${list.length} packages, is that OK?\n`);
-    }
+        if (!changedPackagesFine) {
+            return;
+        }
 
-    // Ask for CHANGELOG for each package.
-    for(const {name, version, path, containsChanges, deps} of list) {
-        const text = [];
-        const depsList = changedDependencies(list, deps, name);
-        let string = '';
-        let index = 0;
-        do {
-            index++;
-            string = await askString(`Changelog for package ${name} (line ${index}):`);
-            if(string) {
-                text.push(string);
+        // Ask for CHANGELOG for each package.
+        for (const {name, version, path, containsChanges, deps} of list) {
+            const text = [];
+            const depsList = changedDependencies(list, deps, name);
+            if (containsChanges) {
+                let string = '';
+                let index = 0;
+                do {
+                    index++;
+                    string = await askString(`Changelog for package ${name} (line ${index}):`);
+                    if (string) {
+                        text.push(string);
+                    }
+                } while (string);
             }
-        } while(string);
-        const changelogMD = await changelog({path, text, version, deps: depsList});
+            // Update changelogs
+            await changelog({path, text, version, deps: depsList});
+        }
+
+        // Commit changelogs
+        await commit('Updated CHANGELOGs');
     }
 
-    // Bump them to stable
+    // Bump packages to stable
+    const push = await ask('Push to git after versions update?');
+    await bump({push});
 
-    // Commit changes
-
-    // Push changes
+    // Publish stable packages
+    if (await ask(hasChangedPackages ? 'Publish STABLE packages to NPM?' : 'No changed packages found. You may try to publish already pushed packages to NPM.')) {
+        await publish();
+    }
 };
