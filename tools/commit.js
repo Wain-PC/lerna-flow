@@ -1,8 +1,7 @@
 const spawn = require('./spawn');
-const gitTask = require('./gitTask');
 
 module.exports = async (commitMessage) => {
-    const taskId = await gitTask();
-    const command = `git commit -a -m "${taskId} ${commitMessage}"`;
+    const messageStr = commitMessage.replace(/\s/g, '\ ');
+    const command = `git commit -a -m "${messageStr}"`;
     return spawn(command, {shell: true});
 };

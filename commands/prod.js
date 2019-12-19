@@ -6,6 +6,7 @@ const changedDependencies = require('../tools/changedDependencies');
 const commit = require('../tools/commit');
 const bump = require('../tools/bump');
 const publish = require('../tools/publish');
+const gitTask = require('../tools/gitTask');
 
 
 module.exports = async () => {
@@ -43,7 +44,9 @@ module.exports = async () => {
 
             // Commit changelogs
             if (await ask('Commit changelogs?')) {
-                await commit('Updated CHANGELOGs');
+                const taskId = await gitTask();
+                const commitMessage = await askString('Commit message:', `${taskId} Updated CHANGELOGs`);
+                await commit(commitMessage);
             }
 
         }
