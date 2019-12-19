@@ -1,7 +1,7 @@
 {
   "name": "lerna-flow",
   "version": "0.0.1",
-  "description": "Toggle the CLI cursor",
+  "description": "Simplify your lerna flow",
   "license": "MIT",
   "repository": "Wain-PC/lerna-flow",
   "author": {
