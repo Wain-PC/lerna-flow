@@ -1,13 +1,21 @@
 {
   "name": "lerna-flow",
   "version": "0.0.1",
-  "description": "Toolchain for simplifying Lerna commands",
+  "description": "Toggle the CLI cursor",
+  "license": "MIT",
+  "repository": "Wain-PC/lerna-flow",
+  "author": {
+    "name": "Pavel Dranichnikov",
+    "email": "wain-pc@mail.ru"
+  },
+  "engines": {
+    "node": ">=8"
+  },
   "main": "index.js",
   "bin": {
     "lerna-flow": "./index.js"
   },
-  "author": "Pavel Dranichnikov",
-  "license": "ISC",
+
   "dependencies": {
     "array-unique": "^0.3.2",
     "inquirer": "^7.0.1",
