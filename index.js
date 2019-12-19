@@ -1,11 +1,9 @@
 #!/usr/bin/env node
-
-const yargs = require('yargs');
 const askChoice = require('./tools/askChoice');
 
 const run = async () => {
-    // TODO: Use something smaller to parse args
-    let [command] = yargs.argv._;
+    let [command] = process.argv.slice(2);
+
 
     if(!command || !['dev', 'prod'].includes(command)) {
         command = await askChoice('Select command', ['dev', 'prod'], 'dev');
