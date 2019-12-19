@@ -5,6 +5,7 @@ const gitTask = require('./gitTask');
 module.exports = async ({version, text = [], path = '', deps}) => {
     const taskId = await gitTask();
 
+    // TODO: Dynamic markdown templates.
     let markdown = `## v${version.stable}\n* [${taskId}](https://jr.avito.ru/browse/${taskId})\n`;
 
     for(const line of text) {
