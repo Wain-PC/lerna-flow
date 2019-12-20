@@ -58,6 +58,6 @@ module.exports = async () => {
 
     // Publish stable packages
     if (await ask(hasChangedPackages ? 'Publish STABLE packages to NPM?' : 'No changed packages found. You may try to publish already pushed packages to NPM.')) {
-        await publish();
+        await publish(true);
     }
 };

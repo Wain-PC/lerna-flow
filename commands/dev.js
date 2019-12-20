@@ -33,7 +33,7 @@ module.exports = async (args) => {
     }
     // Publish dev packages
     if (await ask(hasChangedPackages ? 'Publish packages to NPM?' : 'No changed packages found. You may try to publish already pushed packages to NPM.')) {
-        await publish(type);
+        await publish();
     }
 
     // Level up till we find sibling projects, look at their dependencies.
