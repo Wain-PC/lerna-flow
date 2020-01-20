@@ -5,7 +5,8 @@ const ask = require('../tools/ask');
 const askString = require('../tools/askString');
 const askChoice = require('../tools/askChoice');
 const changed = require('../tools/changed');
-const tag = require('./tag');
+const tagCommand = require('./tag');
+const installCommand = require('./install');
 
 module.exports = async (args) => {
     const {versions, hasPrereleaseVersions, hasChangedPackages, preIds} = await changed();
@@ -17,7 +18,7 @@ module.exports = async (args) => {
         const changedPackagesFine = await ask(`${versions.length} changed packages, is that OK?\n`);
 
         if (!changedPackagesFine) {
-            return tag();
+            return tagCommand();
         }
 
         // If we have stable versions now, we should bump them to dev first
@@ -34,7 +35,11 @@ module.exports = async (args) => {
     // Publish dev packages
     if (await ask(hasChangedPackages ? 'Publish packages to NPM?' : 'No changed packages found. You may try to publish already pushed packages to NPM.')) {
         await publish();
+        if(await ask('Prepare NPM install line?')) {
+            await installCommand();
+        }
     }
+
 
     // Level up till we find sibling projects, look at their dependencies.
 

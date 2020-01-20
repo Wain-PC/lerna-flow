@@ -7,7 +7,7 @@ const commit = require('../tools/commit');
 const bump = require('../tools/bump');
 const publish = require('../tools/publish');
 const gitTask = require('../tools/gitTask');
-
+const installCommand = require('./install');
 
 module.exports = async () => {
     // Find packages with prerelease tag
@@ -59,5 +59,8 @@ module.exports = async () => {
     // Publish stable packages
     if (await ask(hasChangedPackages ? 'Publish STABLE packages to NPM?' : 'No changed packages found. You may try to publish already pushed packages to NPM.')) {
         await publish(true);
+        if (await ask('Prepare NPM install line?')) {
+            await installCommand();
+        }
     }
 };
