@@ -1,5 +1,5 @@
 const spawn = require('../tools/spawn');
-const branch = require('../tools/branch');
+const gitBranch = require('../tools/gitBranch');
 
 const masterBranch = 'master';
 
@@ -8,7 +8,7 @@ module.exports = async (branchName) => {
         return;
     }
 
-    const branch = await branch();
+    const branch = await gitBranch();
 
     // 1. Checkout master.
     if(branch !== masterBranch) {
