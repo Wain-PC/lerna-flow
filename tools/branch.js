@@ -1,30 +1,31 @@
 const spawn = require('../tools/spawn');
+const branch = require('../tools/branch');
+
+const masterBranch = 'master';
 
 module.exports = async (branchName) => {
     if (!branchName) {
         return;
     }
 
-    try {
-        await spawn(`git stash save`);
-    } catch (err) {
-        // Do nothing
+    const branch = await branch();
+
+    // 1. Checkout master.
+    if(branch !== masterBranch) {
+        try {
+            await spawn(`git checkout ${masterBranch}`);
+        } catch (err) {
+            await spawn(`git checkout -b ${masterBranch}`);
+        }
     }
 
-    try {
-        await spawn(`git checkout master`);
-    } catch (err) {
-        await spawn(`git checkout -b master`);
-    }
-
+    // 2. Pull latest changes from master.
     await spawn(`git pull`);
 
+    // 3. Create new branch atop of master.
     try {
         await spawn(`git checkout -b ${branchName}`);
     } catch (err) {
         // do nothing
     }
-
-    await spawn(`git stash apply --index`);
-
 };
