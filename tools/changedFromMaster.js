@@ -6,7 +6,7 @@ const exec = require('./exec');
 const parseVersion = require('./parseVersion');
 const changedDependencies = require('./changedDependencies');
 
-module.exports = async (baseBranch = 'master') => {
+module.exports = async (baseBranch = 'origin/master') => {
     const branch = await gitBranch();
     const command = `git diff ${branch}..${baseBranch} --name-only`;
     const {stdout} = await exec(command);
