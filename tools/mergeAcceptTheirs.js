@@ -3,6 +3,7 @@
 const exec = require('./exec');
 const spawn = require('./spawn');
 const ask = require('./ask');
+const {gitOrigin, masterBranch} = require('./config');
 const dev = require('../commands/dev');
 
 const listContainsOnlySelectedFiles = (list, selectedFiles) => {
@@ -26,7 +27,7 @@ const abort = () => {
 
 const selectedFiles = ['package.json', 'package.lock', 'CHANGELOG.md'];
 
-module.exports = async (masterBranch = 'origin/master') => {
+module.exports = async (masterBranch = `${gitOrigin}/${masterBranch}`) => {
     // Fetch latest master
     await spawn('git fetch');
     // Merge master into current branch

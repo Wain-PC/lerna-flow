@@ -1,19 +1,11 @@
-const exec = require('./exec');
+const gitTask = require('./gitTask');
+const { jiraUrl } = require('../tools/config');
 
 module.exports = async () => {
-    try {
-        const {stdout} = await exec('git remote -v');
-        const regExp = /([\w-]+)@([\w-.]+):(\d+?)?\/([\w-]+)\/([\w-]+)\.git/;
-        const [fullMatch, user, host, port, project, repository] = regExp.exec(stdout);
-
-        return {
-            remote: fullMatch,
-            repositoryUrl: `http://${host}/projects/${project}/repos/${repository}`
-        }
-    } catch (err) {
-        return {
-            remote: '',
-            repositoryUrl: ''
-        };
+    const task = await gitTask();
+    if (!task) {
+        throw new Error('Unable to determine Jira task');
     }
+
+    return `${jiraUrl}/browse/${task}`;
 };

@@ -1,9 +1,9 @@
 const open = require('open');
-const jira = require('../tools/jira');
+const stash = require('../tools/stash');
 const gitBranch = require('../tools/gitBranch');
 
 module.exports = async () => {
-  const {repositoryUrl} = await jira();
+  const {repositoryUrl} = await stash();
   if(!repositoryUrl) {
     console.log('Cannot determine repository URL from git remote, sorry =(');
     return;

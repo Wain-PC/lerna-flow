@@ -1,0 +1,6 @@
+{
+  "gitOrigin": "origin",
+  "masterBranch": "master",
+  "taskRegExp": "^([A-Z]+-\\d+)",
+  "jiraUrl": "https://jr.avito.ru"
+}

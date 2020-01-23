@@ -49,7 +49,7 @@ module.exports = async (args) => {
 
     // Push branch
 
-    // Optionally, create a pull request in Jira.
+    // Optionally, create a pull request in Stash.
 
     // Optionally, merge master into branch and automatically resolve package.json / package.lock deps.
 

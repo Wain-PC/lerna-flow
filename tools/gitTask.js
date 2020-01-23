@@ -1,9 +1,10 @@
 const gitBranch = require('./gitBranch');
+const {taskRegExp} = require('./config');
 
 module.exports = async () => {
     const branch = await gitBranch();
-    const taskRegExp = /^([A-Z]+-\d+)/;
-    const result = taskRegExp.exec(branch);
+    const taskRe = new RegExp(taskRegExp);
+    const result = taskRe.exec(branch);
     if(!(result && result[0])) {
         return null;
     }
