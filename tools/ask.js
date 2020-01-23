@@ -1,6 +1,13 @@
 const inquirer = require('inquirer');
+const getFlags = require('./flags');
 
 module.exports = async (message) => {
+    const {yes} = getFlags();
+
+    if (yes) {
+        return true;
+    }
+
     const {question} = await inquirer.prompt([{
         type: 'expand',
         name: 'question',
