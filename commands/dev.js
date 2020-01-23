@@ -5,10 +5,17 @@ const ask = require('../tools/ask');
 const askString = require('../tools/askString');
 const askChoice = require('../tools/askChoice');
 const changed = require('../tools/changed');
+const getUncommitedFiles = require('../tools/uncommitedFiles');
 const tagCommand = require('./tag');
 const installCommand = require('./install');
 
 module.exports = async (args) => {
+    const uncommitedFiles = await getUncommitedFiles();
+    if(uncommitedFiles.length) {
+        console.log('Working tree has uncommitted changes, please commit or remove changes before continuing.');
+        return;
+    }
+
     const {versions, hasPrereleaseVersions, hasChangedPackages, preIds} = await changed();
 
     let tag = preIds[0] || '';

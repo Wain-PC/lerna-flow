@@ -5,7 +5,7 @@ module.exports = async () => {
     return stdout.split('\n')
         .filter(n => n)
         .map(str => {
-            const [file, mode] = str.split(' ');
+            const [, mode, file] = str.split(' ');
             return {file, mode};
         });
 };

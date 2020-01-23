@@ -7,9 +7,16 @@ const commit = require('../tools/commit');
 const bump = require('../tools/bump');
 const publish = require('../tools/publish');
 const gitTask = require('../tools/gitTask');
+const getUncommitedFiles = require('../tools/uncommitedFiles');
 const installCommand = require('./install');
 
 module.exports = async () => {
+    const uncommitedFiles = await getUncommitedFiles();
+    if(uncommitedFiles.length) {
+        console.log('Working tree has uncommitted changes, please commit or remove changes before continuing.');
+        return;
+    }
+
     // Find packages with prerelease tag
     const list = await changedFromMaster();
     const hasChangedPackages = list.length;
