@@ -1,6 +1,7 @@
 const open = require('open');
 const stash = require('../tools/stash');
 const gitBranch = require('../tools/gitBranch');
+const gitTask = require('../tools/gitTask');
 
 module.exports = async () => {
   const {repositoryUrl} = await stash();
@@ -9,6 +10,7 @@ module.exports = async () => {
     return;
   }
   const branch = await gitBranch();
-  open(`${repositoryUrl}/pull-requests?create&sourceBranch=refs/heads/${branch}`);
+  const task = await gitTask();
+  open(`${repositoryUrl}/pull-requests?create&sourceBranch=refs/heads/${branch}&title=[WIP] ${task} `);
   console.log('PR should now be opened in your browser');
 };
