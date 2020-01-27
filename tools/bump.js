@@ -15,6 +15,4 @@ module.exports = async ({type, tag, push}) => {
     const command = ['lerna version', typeStr, pushStr, commitMessageStr, tagStr, exactStr, includeMergedTags].filter(v=>v).join(' ');
     // Run in the shell to allow interactive behavior
     return spawn(command, {shell: true});
-
-
 };
