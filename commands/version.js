@@ -1,4 +1,4 @@
-const askChoice = require('../tools/askString');
+const askChoice = require('../tools/askChoice');
 const ask = require('../tools/ask');
 const bump = require('../tools/bump');
 

@@ -1,3 +1,4 @@
+const {resolve} = require('path');
 const {promisify} = require('util');
 const readPackageJson = promisify(require('read-package-json'));
 const unique = require('array-unique');
@@ -20,16 +21,22 @@ module.exports = async (baseBranch = `${gitOrigin}/${masterBranch}`) => {
             continue;
         }
         if(!packages[path]) {
-            packages[path] = {
-                path,
-                containsChanges: false
-            };
+            // Try to read package.json from a path
+            try {
+                const {name, version, dependencies = {}, devDependencies = {}} = await readPackageJson(resolve(path, 'package.json'));
+                packages[path] = {
+                    path,
+                    name,
+                    version: parseVersion(version),
+                    deps: {...dependencies, ...devDependencies},
+                    containsChanges: false
+                };
+            } catch(err) {
+                // do nothing
+            }
         }
-        if (line.endsWith('package.json')) {
-            const {name, version, dependencies = {}, devDependencies = {}} = await readPackageJson(line);
-            packages[path] = {...packages[path], name, version: parseVersion(version), deps: {...dependencies, ...devDependencies}};
-        } else if(!excludedFiles.some(file =>line.endsWith(file))) {
-            packages[path] = {...packages[path], containsChanges: true};
+        if(packages[path] && !excludedFiles.some(file =>line.endsWith(file))) {
+            packages[path].containsChanges = true;
         }
     }
 

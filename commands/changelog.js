@@ -12,10 +12,18 @@ module.exports = async () => {
     const {versions} = await changed();
     const list = await changedFromMaster();
 
-    // TODO: Better comparison
-    if (list.length !== versions.length) {
+    if (!list.length) {
+        console.error('No changed packages found. Try commiting something.');
+        return;
+    }
+
+    if (versions.length > list.length) {
         await tag();
     }
+
+    console.log('Packages to produce CHANGELOGs for:');
+
+    list.forEach(({name, containsChanges}) => console.log((containsChanges ? '* ' : '  ') + name));
 
     // Ask for CHANGELOG for each package.
     for (const {name, version, path, containsChanges, deps} of list) {
