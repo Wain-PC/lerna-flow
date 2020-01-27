@@ -1,8 +1,9 @@
 const spawn = require('./spawn');
 const gitTask = require('./gitTask');
+const {distTag} = require('./config');
 
 module.exports = async () => {
-    const taskId = await gitTask();
+    const taskId = await gitTask() || distTag;
     const canaryStr = `--canary`;
     const tagStr = `--preid "${taskId}"`;
 
