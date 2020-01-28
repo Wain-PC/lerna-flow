@@ -7,13 +7,14 @@ const tag = require("../tools/tag");
 const ask = require("../tools/ask");
 const commit = require("../tools/commit");
 const gitTask = require("../tools/gitTask");
+const logger = require("../tools/logger");
 
 module.exports = async () => {
   const { versions } = await changed();
   const list = await changedFromMaster();
 
   if (!list.length) {
-    console.error("No changed packages found. Try commiting something.");
+    logger.error("No changed packages found. Try commiting something.");
     return;
   }
 
@@ -21,10 +22,10 @@ module.exports = async () => {
     await tag();
   }
 
-  console.log("Packages to produce CHANGELOGs for:");
+  logger.log("Packages to produce CHANGELOGs for:");
 
   list.forEach(({ name, containsChanges }) =>
-    console.log((containsChanges ? "* " : "  ") + name)
+    logger.log((containsChanges ? "* " : "  ") + name)
   );
 
   // Ask for CHANGELOG for each package.

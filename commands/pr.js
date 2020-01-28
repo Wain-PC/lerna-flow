@@ -2,11 +2,12 @@ const open = require("open");
 const stash = require("../tools/stash");
 const gitBranch = require("../tools/gitBranch");
 const gitTask = require("../tools/gitTask");
+const logger = require("../tools/logger");
 
 module.exports = async () => {
   const { repositoryUrl } = await stash();
   if (!repositoryUrl) {
-    console.log("Cannot determine repository URL from git remote, sorry =(");
+    logger.log("Cannot determine repository URL from git remote, sorry =(");
     return;
   }
   const branch = await gitBranch();
@@ -14,5 +15,5 @@ module.exports = async () => {
   open(
     `${repositoryUrl}/pull-requests?create&sourceBranch=refs/heads/${branch}&title=[WIP] ${task} `
   );
-  console.log("PR should now be opened in your browser");
+  logger.log("PR should now be opened in your browser");
 };

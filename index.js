@@ -3,11 +3,12 @@ const { resolve } = require("path");
 const askChoice = require("./tools/askChoice");
 const getUncommitedFiles = require("./tools/uncommitedFiles");
 const readdir = require("./tools/readdir");
+const logger = require("./tools/logger");
 
 const run = async () => {
   const uncommitedFiles = await getUncommitedFiles();
   if (uncommitedFiles.length) {
-    console.log(
+    logger.log(
       "Working tree has uncommitted changes, please commit or remove changes before continuing."
     );
     return;
@@ -19,7 +20,7 @@ const run = async () => {
   const commands = (await readdir(commandsDir)).map(file => file.slice(0, -3));
 
   if (command && !commands.includes(command)) {
-    console.log(`Unknown command '${command}'!`);
+    logger.log(`Unknown command '${command}'!`);
   }
 
   if (!command || !commands.includes(command)) {
@@ -29,7 +30,7 @@ const run = async () => {
   // eslint-disable-next-line global-require,import/no-dynamic-require
   await require(resolve(commandsDir, command))();
 
-  console.log("Thanks, bye!");
+  logger.log("Thanks, bye!");
 };
 
 run();

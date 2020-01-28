@@ -1,7 +1,8 @@
 const { command } = require("execa");
+const logger = require("../tools/logger");
 
 module.exports = (commandString, opts) => {
-  console.log(commandString);
+  logger.log(commandString);
   return command(commandString, {
     stdio: "inherit",
     preferLocal: true,

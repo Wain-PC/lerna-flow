@@ -4,6 +4,7 @@ const askType = require("../tools/askType");
 const publish = require("../tools/publish");
 const bump = require("../tools/bump");
 const installCommand = require("./install");
+const logger = require("../tools/logger");
 
 const changelog = require("./changelog");
 
@@ -13,7 +14,7 @@ module.exports = async () => {
   const hasChangedPackages = list.length;
 
   if (hasChangedPackages) {
-    console.log(list.map(({ name }) => name).join("\n"));
+    logger.log(list.map(({ name }) => name).join("\n"));
     const changedPackagesFine = await ask(
       `Going to publish ${list.length} packages, is that OK?\n`
     );
