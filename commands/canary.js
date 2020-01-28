@@ -1,6 +1,9 @@
 const canary = require('../tools/canary');
-const installCommand = require('./install');
+const askChoice = require('../tools/askChoice');
+const askString = require('../tools/askString');
 
 module.exports = async () => {
-    await canary();
+    const type = await askChoice('Bump type?', ['major', 'minor', 'patch'], 'minor');
+    const preId = await askString('PreID tag?', 'dev');
+    await canary(type, preId);
 };
