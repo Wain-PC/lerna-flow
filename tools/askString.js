@@ -1,19 +1,21 @@
-const inquirer = require('inquirer');
-const getFlags = require('./flags');
+const inquirer = require("inquirer");
+const getFlags = require("./flags");
 
-module.exports = async (message, defaultMessage = '') => {
-    const {yes} = getFlags();
+module.exports = async (message, defaultMessage = "") => {
+  const { yes } = getFlags();
 
-    if (defaultMessage && yes) {
-        return defaultMessage;
+  if (defaultMessage && yes) {
+    return defaultMessage;
+  }
+
+  const { question } = await inquirer.prompt([
+    {
+      type: "string",
+      name: "question",
+      message,
+      default: defaultMessage
     }
+  ]);
 
-    const {question} = await inquirer.prompt([{
-        type: 'string',
-        name: 'question',
-        message,
-        default: defaultMessage
-    }]);
-
-    return question;
+  return question;
 };

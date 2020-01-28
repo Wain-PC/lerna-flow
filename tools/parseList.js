@@ -1,7 +1,8 @@
-const parseVersion = require('./parseVersion');
+const parseVersion = require("./parseVersion");
 
-module.exports = (stdout) => {
-    return JSON.parse(stdout).map(({name, version, location: path}) =>  {
-        return {name, version: parseVersion(version), path};
-    });
-};
+module.exports = stdout =>
+  JSON.parse(stdout).map(({ name, version, location: path }) => ({
+    name,
+    version: parseVersion(version),
+    path
+  }));

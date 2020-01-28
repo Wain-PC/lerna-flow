@@ -1,5 +1,3 @@
-const spawn = require('./spawn');
+const spawn = require("./spawn");
 
-module.exports = () => {
-    return spawn('lerna publish from-package', {shell: true});
-};
+module.exports = () => spawn("lerna publish from-package", { shell: true });

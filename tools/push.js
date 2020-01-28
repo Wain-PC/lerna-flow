@@ -1,5 +1,5 @@
-const exec = require('./exec');
+const exec = require("./exec");
 
 module.exports = async () => {
-    await exec(`git push origin`);
+  await exec("git push origin");
 };

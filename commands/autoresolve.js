@@ -1,5 +1,3 @@
-const mergeAcceptTheirs = require('../tools/mergeAcceptTheirs');
+const mergeAcceptTheirs = require("../tools/mergeAcceptTheirs");
 
-module.exports = () => {
-    return mergeAcceptTheirs();
-};
+module.exports = () => mergeAcceptTheirs();

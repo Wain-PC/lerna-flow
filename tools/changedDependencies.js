@@ -1,21 +1,21 @@
-const parseVersion = require('./parseVersion');
+const parseVersion = require("./parseVersion");
 
 module.exports = (list, deps, packageName) => {
-    const output = [];
-    for(const {name} of list) {
-        // Don't parse yourself
-        if(name === packageName) {
-            continue;
+  const output = [];
+  Object.values(list).reduce((acc, { name }) => {
+    if (name !== packageName) {
+      Object.keys(deps).forEach(dep => {
+        if (dep === name) {
+          acc.push({
+            name: dep,
+            version: parseVersion(deps[dep])
+          });
         }
-        for(const dep of Object.keys(deps)) {
-            if(dep === name) {
-                output.push({
-                    name: dep,
-                    version: parseVersion(deps[dep])
-                });
-            }
-        }
+      });
     }
 
-    return output;
+    return acc;
+  }, []);
+
+  return output;
 };
