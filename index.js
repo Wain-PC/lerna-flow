@@ -27,10 +27,16 @@ const run = async () => {
     command = await askChoice("Select command", commands, "dev");
   }
 
-  // eslint-disable-next-line global-require,import/no-dynamic-require
-  await require(resolve(commandsDir, command))();
-
-  logger.log("Thanks, bye!");
+  try {
+    // eslint-disable-next-line global-require,import/no-dynamic-require
+    await require(resolve(commandsDir, command))();
+    logger.log("Thanks, bye!");
+  } catch (err) {
+    logger.error(
+      `Something went terribly wrong. You can probably find additional info below:
+      ${err}`
+    );
+  }
 };
 
 run();
