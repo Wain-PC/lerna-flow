@@ -1,5 +1,4 @@
 const spawn = require('./spawn');
-const gitTask = require('./gitTask');
 const {distTag} = require('./config');
 
 module.exports = async (type, preId = distTag) => {
