@@ -38,7 +38,6 @@ module.exports = async () => {
       let index = 0;
       do {
         index += 1;
-        // eslint-disable-next-line no-await-in-loop
         string = await askString(
           `Changelog for package ${name} (line ${index}):`
         );
@@ -48,7 +47,6 @@ module.exports = async () => {
       } while (string);
     }
     // Update changelogs
-    // eslint-disable-next-line no-await-in-loop
     await changelog({
       path,
       text,

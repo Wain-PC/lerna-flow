@@ -1,7 +1,7 @@
 const exec = require("./exec");
 
-module.exports = async () => {
-  const { stdout } = await exec("git status --porcelain");
+module.exports = async (opts = {}) => {
+  const { stdout } = await exec("git status --porcelain", opts);
   return stdout
     .split("\n")
     .filter(n => n)

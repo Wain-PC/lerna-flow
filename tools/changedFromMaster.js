@@ -28,7 +28,7 @@ module.exports = async (baseBranch = `${gitOrigin}/${masterBranch}`) => {
             version,
             dependencies = {},
             devDependencies = {}
-          } = await readPackageJson(resolve(path, "package.json")); // eslint-disable-line no-await-in-loop
+          } = await readPackageJson(resolve(path, "package.json"));
           packages[path] = {
             path,
             name,
