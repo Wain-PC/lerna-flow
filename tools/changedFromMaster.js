@@ -12,7 +12,12 @@ module.exports = async (baseBranch = `${gitOrigin}/${masterBranch}`) => {
   const { stdout } = await exec(command);
 
   const packages = {};
-  const excludedFiles = ["CHANGELOG.md", "package.lock", "yarn.lock"];
+  const excludedFiles = [
+    "CHANGELOG.md",
+    "package.json",
+    "package.lock",
+    "yarn.lock"
+  ];
   // eslint-disable-next-line no-restricted-syntax
   for (const line of stdout.split("\n")) {
     const path = line

@@ -31,5 +31,5 @@ module.exports = async ({ type, tag, push }) => {
     .filter(v => v)
     .join(" ");
   // Run in the shell to allow interactive behavior
-  return spawn(command, { shell: true });
+  await spawn(command, { shell: true });
 };
