@@ -40,7 +40,7 @@ module.exports = async () => {
         : "No changed packages found. You may try to publish already pushed packages to NPM."
     )
   ) {
-    await publish();
+    await publish(true);
     if (await ask("Prepare NPM install line?")) {
       await installCommand();
     }

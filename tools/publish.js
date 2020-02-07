@@ -1,3 +1,6 @@
 const spawn = require("./spawn");
 
-module.exports = () => spawn("lerna publish from-package", { shell: true });
+module.exports = prod => {
+  const distTag = prod ? "" : "--dist-tag=dev";
+  spawn(`lerna publish from-package ${distTag}`, { shell: true });
+};

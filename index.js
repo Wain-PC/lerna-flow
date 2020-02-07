@@ -4,14 +4,37 @@ const askChoice = require("./tools/askChoice");
 const getUncommitedFiles = require("./tools/uncommitedFiles");
 const readdir = require("./tools/readdir");
 const logger = require("./tools/logger");
+const getFlags = require("./tools/flags");
+const gitStash = require("./tools/gitStash");
+const gitReset = require("./tools/gitReset");
 
 const run = async () => {
+  const flags = getFlags();
   const uncommitedFiles = await getUncommitedFiles();
-  if (uncommitedFiles.length) {
-    logger.log(
-      "Working tree has uncommitted changes, please commit or remove changes before continuing."
-    );
-    return;
+  if (!flags.dirty && uncommitedFiles.length) {
+    logger.log(uncommitedFiles.join("\n"));
+    const choice = await askChoice("Working tree has uncommitted changes", [
+      "stop",
+      "stash",
+      "reset",
+      "continue"
+    ]);
+    switch (choice) {
+      case "stop": {
+        return;
+      }
+      case "stash": {
+        await gitStash();
+        break;
+      }
+      case "reset": {
+        await gitReset();
+        break;
+      }
+      default: {
+        // just move ahead
+      }
+    }
   }
 
   let [command] = process.argv.slice(2);

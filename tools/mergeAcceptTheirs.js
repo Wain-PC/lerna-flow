@@ -2,12 +2,8 @@
 
 const exec = require("./exec");
 const spawn = require("./spawn");
+const listContainsOnlySelectedFiles = require("./listContainsOnlySelectedFiles");
 const { gitOrigin, masterBranch } = require("./config");
-
-const listContainsOnlySelectedFiles = (list, selectedFiles) =>
-  list.every(file =>
-    selectedFiles.some(selectedFile => file.endsWith(selectedFile))
-  );
 
 const abort = () => {
   try {
