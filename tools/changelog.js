@@ -11,7 +11,7 @@ module.exports = async ({ version, text = [], path = "", deps }) => {
     markdown += `* ${line}\n`;
   });
   deps.forEach(({ name, version: depVersion }) => {
-    markdown += `* Пакет ${name} обновлён до версии ${depVersion.stable}\n`;
+    markdown += `* Пакет \`${name}\` обновлён до версии \`${depVersion.stable}\`\n`;
   });
   markdown += "\n";
 

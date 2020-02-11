@@ -1,8 +1,7 @@
 const parseVersion = require("./parseVersion");
 
 module.exports = (list, deps, packageName) => {
-  const output = [];
-  Object.values(list).reduce((acc, { name }) => {
+  return Object.values(list).reduce((acc, { name }) => {
     if (name !== packageName) {
       Object.keys(deps).forEach(dep => {
         if (dep === name) {
@@ -16,6 +15,4 @@ module.exports = (list, deps, packageName) => {
 
     return acc;
   }, []);
-
-  return output;
 };
