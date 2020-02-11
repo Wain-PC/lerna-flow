@@ -18,7 +18,7 @@ module.exports = async () => {
     const changedPackagesFine = await ask(
       `Going to publish ${list.length} packages, is that OK?\n`
     );
-    if (changedPackagesFine) {
+    if (!changedPackagesFine) {
       return;
     }
 
