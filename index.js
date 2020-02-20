@@ -12,7 +12,9 @@ const run = async () => {
   const flags = getFlags();
   const uncommitedFiles = await getUncommitedFiles();
   if (!flags.dirty && uncommitedFiles.length) {
-    logger.log(uncommitedFiles.join("\n"));
+    logger.log(
+      uncommitedFiles.map(({ file, mode }) => `${file} ${mode}`).join("\n")
+    );
     const choice = await askChoice("Working tree has uncommitted changes", [
       "stop",
       "stash",
