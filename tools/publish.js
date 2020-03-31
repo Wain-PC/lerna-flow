@@ -1,6 +1,6 @@
 const spawn = require("./spawn");
 
-module.exports = prod => {
+module.exports = async prod => {
   const distTag = prod ? "" : "--dist-tag=dev";
-  spawn(`lerna publish from-package ${distTag}`, { shell: true });
+  await spawn(`lerna publish from-package ${distTag}`, { shell: true });
 };
