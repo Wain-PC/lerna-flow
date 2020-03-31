@@ -1,3 +1,4 @@
 const { command } = require("execa");
 
-module.exports = commandStr => command(commandStr, { preferLocal: true });
+module.exports = (commandStr, opts) =>
+  command(commandStr, { preferLocal: true, ...opts });

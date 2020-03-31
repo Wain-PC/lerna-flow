@@ -1,5 +1,5 @@
 const { command } = require("execa");
-const logger = require("../tools/logger");
+const logger = require("./logger");
 
 module.exports = (commandString, opts) => {
   logger.log(commandString);

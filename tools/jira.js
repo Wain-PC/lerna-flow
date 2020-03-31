@@ -1,5 +1,5 @@
 const gitTask = require("./gitTask");
-const { jiraUrl } = require("../tools/config");
+const { jiraUrl } = require("./config");
 
 module.exports = async () => {
   const task = await gitTask();

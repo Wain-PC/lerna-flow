@@ -1,97 +1,107 @@
 const { promisify } = require("util");
-const access = promisify(require("fs").access);
 const readdir = promisify(require("fs").readdir);
 const path = require("path");
 const readPackageJson = promisify(require("read-package-json"));
+const hasFileAccess = require("./hasFileAccess");
 const logger = require("./logger");
 const exec = require("./exec");
 const spawn = require("./spawn");
 const findProjectRoot = require("./findProjectRoot");
 const hasLerna = require("./hasLerna");
-const gitBranch = require("./gitBranch");
-const uncommitedFiles = require("./uncommitedFiles");
-const branch = require("../tools/branch");
-const ask = require("../tools/ask");
+const ask = require("./ask");
+const publishedPackages = require("./publishedPackages");
+
+const parsePackageNames = list =>
+  list.map(item => item.slice(0, item.lastIndexOf("@")));
+
+const run = async ({ packages, absoluteDirectory, withLerna }) => {
+  const { dependencies } = await readPackageJson(
+    path.resolve(absoluteDirectory, "package.json")
+  );
+
+  console.log("-------------------------------");
+  console.log("ABSDIR:", absoluteDirectory);
+  console.log("PACKS:", packages);
+
+  // Find common packages
+  const commonPackages = parsePackageNames(packages).reduce(
+    (acc, packageName, index) => {
+      if (dependencies[packageName]) {
+        acc.push(packages[index]);
+      }
+      return acc;
+    },
+    []
+  );
+
+  if (!commonPackages.length) {
+    return;
+  }
+
+  const npmInstallLine = `npm install ${commonPackages.join(" ")}`;
+
+  if (await ask(`Wanna do '${npmInstallLine}' in '${absoluteDirectory}'?`)) {
+    await spawn(npmInstallLine, {
+      cwd: absoluteDirectory
+    });
+
+    if (
+      withLerna &&
+      (await ask(`Wanna bump versions in repo '${absoluteDirectory}'?`))
+    ) {
+      await spawn("lerna-flow dev", {
+        cwd: absoluteDirectory
+      });
+    }
+  }
+};
 
 module.exports = async updatedPackages => {
+  const packages = updatedPackages || (await publishedPackages());
+
   const projectRoot = await findProjectRoot();
-  const rootGitBranch = await gitBranch();
   // One step from repo (package.json location)
   const projectsDir = path.resolve(projectRoot, "..");
   const siblingProjects = await readdir(projectsDir);
   for (let i = 0; i < siblingProjects.length; i += 1) {
     const directory = siblingProjects[i];
     const absoluteDirectory = path.resolve(projectsDir, directory);
+    logger.log(`Now inspecting sibling project at '${absoluteDirectory}'`);
 
-    if (await uncommitedFiles({ cwd: absoluteDirectory }).length) {
-      // Skip if repo has uncommitted files in the current branch
-      logger.error(
-        `Repo ${directory} has uncommited files. Update will be skipped`
-      );
-      // eslint-disable-next-line no-continue
-      continue;
-    }
-
-    // Walk into each directory
-    // Check whether it's a Lerna repository or a simple NPM repository.
-    // It's a Lerna repo if the directory contains lerna.json
-    try {
+    if (
+      absoluteDirectory !== projectRoot &&
+      (await hasFileAccess(path.resolve(absoluteDirectory, "package.json")))
+    ) {
+      // Walk into each directory
+      // Check whether it's a Lerna repository or a simple NPM repository.
+      // It's a Lerna repo if the directory contains lerna.json
       if (await hasLerna(absoluteDirectory)) {
-        console.log(`${absoluteDirectory} has lerna`);
         const { stdout } = await exec("lerna ls -la --json", {
           cwd: absoluteDirectory
         });
         const lernaPackages = JSON.parse(stdout);
+        console.log(
+          `This lerna project contains ${JSON.stringify(
+            lernaPackages
+          )} packages`
+        );
         // Visit each package, read its package.json and determine packages to update.
         // eslint-disable-next-line no-restricted-syntax
-        for (const { name: lernaPackageName, location } of lernaPackages) {
-          const { dependencies } = await readPackageJson(
-            path.resolve(location, "package.json")
-          );
-
-          // eslint-disable-next-line no-restricted-syntax
-          for (const dependency of Object.keys(dependencies)) {
-            if (updatedPackages[dependency]) {
-              // This package should be bumped.
-              console.log(
-                `Found dependency ${dependency} in package ${lernaPackageName} in sibling repo ${directory} (git branch:${await gitBranch(
-                  { cwd: absoluteDirectory }
-                )}`
-              );
-              // Determine whether we're on the same branch as in the 'root' repo.
-              if (
-                (await gitBranch({ cwd: absoluteDirectory })) !== rootGitBranch
-              ) {
-                if (
-                  await ask(
-                    `Git branch in repo ${directory} differs from current branch, create or switch?`
-                  )
-                ) {
-                  await branch(rootGitBranch);
-                }
-              }
-              // Update the package in scope using `lerna add --scope`
-              await spawn(
-                `lerna add ${dependency}@${updatedPackages[dependency]} --scope ${lernaPackageName}`
-              );
-            }
-          }
+        for (const { location } of lernaPackages) {
+          await run({
+            absoluteDirectory: location,
+            packages,
+            withLerna: true
+          });
         }
-      } else if (
-        await access(path.resolve(projectsDir, directory, "package.json"))
-      ) {
-        // do nothing
+      } else {
+        // Read package.json, find common packages and perform npm install.
+        await run({
+          absoluteDirectory,
+          packages,
+          withLerna: false
+        });
       }
-    } catch (err) {
-      // do nothing
-      logger.error(err);
     }
   }
-
-  // If it's a Lerna repository:
-  // 1. Collect dependent packages
-  // 2. Symlink them to current repo.
-  // 3. Patch lerna to accept symlinked directories.
-  // 4. Let lerna do its stuff.
-  // 5. Reverse the patch.
 };

@@ -1,5 +1,5 @@
-const spawn = require("../tools/spawn");
-const gitBranch = require("../tools/gitBranch");
+const spawn = require("./spawn");
+const gitBranch = require("./gitBranch");
 
 const masterBranch = "master";
 
