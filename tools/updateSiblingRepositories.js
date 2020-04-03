@@ -3,13 +3,14 @@ const readdir = promisify(require("fs").readdir);
 const path = require("path");
 const readPackageJson = promisify(require("read-package-json"));
 const hasFileAccess = require("./hasFileAccess");
-const logger = require("./logger");
 const exec = require("./exec");
 const spawn = require("./spawn");
 const findProjectRoot = require("./findProjectRoot");
 const hasLerna = require("./hasLerna");
 const ask = require("./ask");
 const publishedPackages = require("./publishedPackages");
+const gitBranch = require("./gitBranch");
+const checkoutOrCreateBranch = require("./branch");
 
 const parsePackageNames = list =>
   list.map(item => item.slice(0, item.lastIndexOf("@")));
@@ -18,10 +19,6 @@ const run = async ({ packages, absoluteDirectory, withLerna }) => {
   const { dependencies } = await readPackageJson(
     path.resolve(absoluteDirectory, "package.json")
   );
-
-  console.log("-------------------------------");
-  console.log("ABSDIR:", absoluteDirectory);
-  console.log("PACKS:", packages);
 
   // Find common packages
   const commonPackages = parsePackageNames(packages).reduce(
@@ -41,6 +38,19 @@ const run = async ({ packages, absoluteDirectory, withLerna }) => {
   const npmInstallLine = `npm install ${commonPackages.join(" ")}`;
 
   if (await ask(`Wanna do '${npmInstallLine}' in '${absoluteDirectory}'?`)) {
+    // If accepted, we should switch branch in the other repo to the same as in the current one.
+    const localBranch = await gitBranch();
+    const remoteBranch = await gitBranch({ cwd: absoluteDirectory });
+
+    if (
+      localBranch !== remoteBranch &&
+      (await ask(
+        `Local branch '${localBranch}' is not equal to branch '${remoteBranch}' in repo '${absoluteDirectory}. Checkout/create branch ${localBranch}?'`
+      ))
+    ) {
+      await checkoutOrCreateBranch(localBranch);
+    }
+
     await spawn(npmInstallLine, {
       cwd: absoluteDirectory
     });
@@ -66,7 +76,6 @@ module.exports = async updatedPackages => {
   for (let i = 0; i < siblingProjects.length; i += 1) {
     const directory = siblingProjects[i];
     const absoluteDirectory = path.resolve(projectsDir, directory);
-    logger.log(`Now inspecting sibling project at '${absoluteDirectory}'`);
 
     if (
       absoluteDirectory !== projectRoot &&
@@ -80,11 +89,6 @@ module.exports = async updatedPackages => {
           cwd: absoluteDirectory
         });
         const lernaPackages = JSON.parse(stdout);
-        console.log(
-          `This lerna project contains ${JSON.stringify(
-            lernaPackages
-          )} packages`
-        );
         // Visit each package, read its package.json and determine packages to update.
         // eslint-disable-next-line no-restricted-syntax
         for (const { location } of lernaPackages) {
