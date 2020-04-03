@@ -11,6 +11,7 @@ const ask = require("./ask");
 const publishedPackages = require("./publishedPackages");
 const gitBranch = require("./gitBranch");
 const checkoutOrCreateBranch = require("./branch");
+const commit = require("./commit");
 
 const parsePackageNames = list =>
   list.map(item => item.slice(0, item.lastIndexOf("@")));
@@ -54,6 +55,8 @@ const run = async ({ packages, absoluteDirectory, withLerna }) => {
     await spawn(npmInstallLine, {
       cwd: absoluteDirectory
     });
+
+    await commit("Updated packages");
 
     if (
       withLerna &&

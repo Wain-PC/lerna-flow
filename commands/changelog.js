@@ -6,7 +6,6 @@ const changed = require("../tools/changed");
 const tag = require("../tools/tag");
 const ask = require("../tools/ask");
 const commit = require("../tools/commit");
-const gitTask = require("../tools/gitTask");
 const logger = require("../tools/logger");
 
 module.exports = async () => {
@@ -57,12 +56,6 @@ module.exports = async () => {
 
   // Commit changelogs
   if (await ask("Commit changelogs?")) {
-    // eslint-disable-next-line no-undef
-    const taskId = await gitTask();
-    const commitMessage = await askString(
-      "Commit message:",
-      `${taskId} Updated CHANGELOGs`
-    );
-    await commit(commitMessage);
+    await commit("Updated CHANGELOGs");
   }
 };
