@@ -15,11 +15,13 @@ module.exports = async () => {
       }, [])
     );
     const hasPrereleaseVersions = preIds.length > 0;
+    const hasStableVersions = versions.some(({ version: { preid } }) => !preid);
     const hasChangedPackages = versions.length > 0;
 
     return {
       versions,
       hasPrereleaseVersions,
+      hasStableVersions,
       hasChangedPackages,
       preIds
     };

@@ -13,11 +13,14 @@ module.exports = async () => {
   const {
     versions,
     hasPrereleaseVersions,
+    hasStableVersions,
     hasChangedPackages,
     preIds
   } = await changed();
 
   let tag = preIds[0] || "";
+  let push = false;
+  let type = "";
 
   if (hasChangedPackages) {
     logger.log(versions.map(({ name }) => name).join("\n"));
@@ -30,20 +33,18 @@ module.exports = async () => {
       return;
     }
 
-    // If we have stable versions now, we should bump them to dev first
-    if (hasPrereleaseVersions) {
-      const push = await ask("Push to git after versions update?");
-      await bump({ type: "prerelease", push, tag });
-    } else {
+    if (!hasPrereleaseVersions) {
       tag = await askString("Enter dev tag:", "dev");
-      const type = await askChoice(
+    } else if (!hasStableVersions) {
+      type = await askChoice(
         "Bump type?",
         ["premajor", "preminor", "prepatch"],
         "preminor"
       );
-      const push = await ask("Push updated packages to git?");
-      await bump({ type, tag, push });
     }
+
+    push = await ask("Push updated packages to git?");
+    await bump({ type, tag, push });
   }
   // Publish dev packages
   if (
