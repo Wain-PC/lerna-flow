@@ -36,12 +36,14 @@ const run = async ({ packages, absoluteDirectory, withLerna }) => {
     return;
   }
 
+  const opts = { cwd: absoluteDirectory };
+
   const npmInstallLine = `npm install ${commonPackages.join(" ")}`;
 
   if (await ask(`Wanna do '${npmInstallLine}' in '${absoluteDirectory}'?`)) {
     // If accepted, we should switch branch in the other repo to the same as in the current one.
     const localBranch = await gitBranch();
-    const remoteBranch = await gitBranch({ cwd: absoluteDirectory });
+    const remoteBranch = await gitBranch(opts);
 
     if (
       localBranch !== remoteBranch &&
@@ -52,19 +54,16 @@ const run = async ({ packages, absoluteDirectory, withLerna }) => {
       await checkoutOrCreateBranch(localBranch);
     }
 
-    await spawn(npmInstallLine, {
-      cwd: absoluteDirectory
-    });
+    await spawn(npmInstallLine, opts);
 
-    await commit("Updated packages");
-
-    if (
-      withLerna &&
-      (await ask(`Wanna bump versions in repo '${absoluteDirectory}'?`))
-    ) {
-      await spawn("lerna-flow dev", {
-        cwd: absoluteDirectory
-      });
+    if (await ask(`Commit changes in '${absoluteDirectory}'?`)) {
+      await commit("Updated packages", opts);
+      if (
+        withLerna &&
+        (await ask(`Wanna bump versions in repo '${absoluteDirectory}'?`))
+      ) {
+        await spawn("lerna-flow dev", opts);
+      }
     }
   }
 };

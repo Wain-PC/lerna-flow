@@ -3,7 +3,7 @@ const ask = require("./ask");
 const askString = require("./askString");
 const gitTask = require("./gitTask");
 
-module.exports = async defaultCommitMessage => {
+module.exports = async (defaultCommitMessage = "", opts = {}) => {
   // eslint-disable-next-line no-undef
   const taskId = await gitTask();
   const commitMessage = await askString(
@@ -17,5 +17,5 @@ module.exports = async defaultCommitMessage => {
   const command = `git commit -a -m "${messageStr}" ${
     skipHooks ? "--no-verify" : ""
   }`;
-  return spawn(command, { shell: true });
+  return spawn(command, { shell: true, ...opts });
 };

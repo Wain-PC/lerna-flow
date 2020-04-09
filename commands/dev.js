@@ -35,7 +35,12 @@ module.exports = async () => {
 
     if (!hasPrereleaseVersions) {
       tag = await askString("Enter dev tag:", "dev");
-    } else if (!hasStableVersions) {
+    }
+
+    if (
+      (hasStableVersions && !hasPrereleaseVersions) ||
+      (!hasStableVersions && hasPrereleaseVersions)
+    ) {
       type = await askChoice(
         "Bump type?",
         ["premajor", "preminor", "prepatch"],
