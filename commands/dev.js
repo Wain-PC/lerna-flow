@@ -43,7 +43,7 @@ module.exports = async () => {
     ) {
       type = await askChoice(
         "Bump type?",
-        ["premajor", "preminor", "prepatch"],
+        ["premajor", "preminor", "prepatch", "prerelease"],
         "preminor"
       );
     }
