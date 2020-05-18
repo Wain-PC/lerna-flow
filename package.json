@@ -1,6 +1,6 @@
 {
   "name": "lerna-flow",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Simplify your lerna flow",
   "license": "MIT",
   "repository": "Wain-PC/lerna-flow",
