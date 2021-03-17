@@ -14,7 +14,6 @@ module.exports = async ({ type, tag, push }) => {
   const pushStr = push ? "" : "--no-push";
   const commitMessageStr = commitMessage ? `-m "${commitMessage}"` : "";
   const tagStr = tag ? `--preid "${tag}"` : "";
-  const exactStr = "--exact";
   const includeMergedTags = "--include-merged-tags";
   const hooksStr = useHooks ? "--no-commit-hooks" : "";
 
@@ -24,7 +23,6 @@ module.exports = async ({ type, tag, push }) => {
     pushStr,
     commitMessageStr,
     tagStr,
-    exactStr,
     includeMergedTags,
     hooksStr
   ]

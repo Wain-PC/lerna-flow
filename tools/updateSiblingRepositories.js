@@ -24,7 +24,7 @@ const run = async ({ packages, absoluteDirectory, withLerna }) => {
   // Find common packages
   const commonPackages = parsePackageNames(packages).reduce(
     (acc, packageName, index) => {
-      if (dependencies[packageName]) {
+      if (dependencies && dependencies[packageName]) {
         acc.push(packages[index]);
       }
       return acc;
